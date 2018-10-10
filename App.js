@@ -6,8 +6,11 @@ import {
   TextInput,
   Dimensions,
   Image,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  TouchableOpacity,
+  Share
 } from 'react-native';
+// import Share from 'react-native-share';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -34,6 +37,25 @@ export default class App extends Component {
     this.setState({ text: event.nativeEvent.text, inputText: '' });
   };
 
+  
+  handleShare = () => {
+    const content = { url: imageURI };
+    const options = {
+      // For Email
+      subject: 'Check out this pic!'
+    };
+
+    Share.share(content, options);
+  };
+
+  renderImage = () => {
+    return (
+      <TouchableOpacity onPress={this.handleShare}>
+        <Image source={{ uri: imageURI }} style={styles.image} />
+      </TouchableOpacity>
+    );
+  };
+
   render() {
     const { text, latitude, longitude, showInput, inputText } = this.state;
 
@@ -42,7 +64,7 @@ export default class App extends Component {
         <KeyboardAvoidingView behavior={'position'} keyboardVerticalOffset={20}>
           {showInput ? (
             <View style={styles.contentContainer}>
-              <Image source={{ uri: imageURI }} style={styles.image} />
+              {this.renderImage()}
               <Text>{this.state.text}</Text>
               <Text
                 style={styles.coordinates}
