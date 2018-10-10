@@ -8,9 +8,9 @@ import {
   Image,
   KeyboardAvoidingView,
   TouchableOpacity,
-  Share
+  Share,
+  Alert
 } from 'react-native';
-// import Share from 'react-native-share';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -23,9 +23,38 @@ export default class App extends Component {
     showInput: false,
     inputText: '',
     text: '',
-    latitude: '33.8734',
-    longitude: '115.9010'
+    latitude: null,
+    longitude: null
   };
+
+  componentDidMount() {
+    const geoOptions = {
+      timeout: 20000,
+      maximumAge: 0,
+      enableHighAccuracy: true
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) => {
+        console.log(
+          'Successfully retrieved coordinates:',
+          `latitude: ${latitude}, longitude: ${longitude}`
+        );
+        this.setState({
+          latitude: latitude.toFixed(3),
+          longitude: longitude.toFixed(3)
+        });
+      },
+      err => {
+        console.log('Error retrieving location: ', err);
+        Alert.alert(
+          'Error',
+          'Unable to retrieve your location. Please check your connection and permissions.'
+        );
+      },
+      geoOptions
+    );
+  }
 
   toggleInput = () => {
     this.setState({ showInput: true });
@@ -34,10 +63,9 @@ export default class App extends Component {
   handleOnChangeText = text => this.setState({ inputText: text });
 
   handleOnSubmit = event => {
-    this.setState({ text: event.nativeEvent.text, inputText: '' });
+    this.setState({ text: event.nativeEvent.text.trim(), inputText: '' });
   };
 
-  
   handleShare = () => {
     const content = { url: imageURI };
     const options = {
@@ -56,8 +84,18 @@ export default class App extends Component {
     );
   };
 
+  renderCoordinates = () => {
+    const { latitude, longitude, text } = this.state;
+
+    if (!!text.length && latitude && longitude) {
+      return (
+        <Text style={styles.coordinates}>{`(${latitude}, ${longitude})`}</Text>
+      );
+    }
+  };
+
   render() {
-    const { text, latitude, longitude, showInput, inputText } = this.state;
+    const { text, showInput, inputText } = this.state;
 
     return (
       <View style={styles.container}>
@@ -66,9 +104,7 @@ export default class App extends Component {
             <View style={styles.contentContainer}>
               {this.renderImage()}
               <Text>{this.state.text}</Text>
-              <Text
-                style={styles.coordinates}
-              >{`(${latitude}, ${longitude})`}</Text>
+              {this.renderCoordinates()}
             </View>
           ) : null}
           {showInput ? (
