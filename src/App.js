@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,34 +10,40 @@ import {
   TouchableOpacity,
   Share,
   Alert
-} from 'react-native';
+} from "react-native";
 
-const WIDTH = Dimensions.get('window').width;
+const WIDTH = Dimensions.get("window").width;
 
-const headerText = 'Hello World!';
+const headerText = "Hello World!";
 const imageURI =
-  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvcR7jOw6QgU4xl7JJwTULxSZoFQ4Qj3GkDX01eQZ72ATmmO1K';
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvcR7jOw6QgU4xl7JJwTULxSZoFQ4Qj3GkDX01eQZ72ATmmO1K";
 
 export default class App extends Component {
   state = {
     showInput: false,
-    inputText: '',
-    text: '',
+    inputText: "",
+    text: "",
     latitude: null,
     longitude: null
   };
 
   componentDidMount() {
+    this.fetchCurrentPosition();
+  }
+
+  fetchCurrentPosition = () => {
     const geoOptions = {
-      timeout: 20000,
+      timeout: 0,
       maximumAge: 0,
       enableHighAccuracy: true
     };
 
+    // navigator.geolocation is global, no import required
+    // eslint-disable-next-line no-undef
     navigator.geolocation.getCurrentPosition(
       ({ coords: { latitude, longitude } }) => {
         console.log(
-          'Successfully retrieved coordinates:',
+          "Successfully retrieved coordinates:",
           `latitude: ${latitude}, longitude: ${longitude}`
         );
         this.setState({
@@ -46,15 +52,15 @@ export default class App extends Component {
         });
       },
       err => {
-        console.log('Error retrieving location: ', err);
+        console.log("Error retrieving location: ", err);
         Alert.alert(
-          'Error',
-          'Unable to retrieve your location. Please check your connection and permissions.'
+          "Error",
+          "Unable to retrieve your location. Please check connection and permissions."
         );
       },
       geoOptions
     );
-  }
+  };
 
   toggleInput = () => {
     this.setState({ showInput: true });
@@ -63,14 +69,21 @@ export default class App extends Component {
   handleOnChangeText = text => this.setState({ inputText: text });
 
   handleOnSubmit = event => {
-    this.setState({ text: event.nativeEvent.text.trim(), inputText: '' });
+    const { latitude, longitude } = this.state;
+
+    // Retry fetching current position if needed
+    if (!latitude || !longitude) {
+      this.fetchCurrentPosition();
+    }
+
+    this.setState({ text: event.nativeEvent.text.trim(), inputText: "" });
   };
 
   handleShare = () => {
     const content = { url: imageURI };
     const options = {
       // For Email
-      subject: 'Check out this pic!'
+      subject: "Check out this pic!"
     };
 
     Share.share(content, options);
@@ -98,26 +111,31 @@ export default class App extends Component {
     const { text, showInput, inputText } = this.state;
 
     return (
-      <View style={styles.container}>
-        <KeyboardAvoidingView behavior={'position'} keyboardVerticalOffset={20}>
+      <View style={[styles.container, styles.center]}>
+        <KeyboardAvoidingView
+          behavior="position"
+          style={styles.center}
+          keyboardVerticalOffset={20}
+        >
           {showInput ? (
-            <View style={styles.contentContainer}>
+            <View style={styles.center}>
               {this.renderImage()}
-              <Text>{this.state.text}</Text>
+              <Text style={styles.text}>{text}</Text>
               {this.renderCoordinates()}
             </View>
           ) : null}
           {showInput ? (
             <TextInput
               style={styles.textInput}
-              onChangeText={text => this.handleOnChangeText(text)}
+              maxLength={100}
+              onChangeText={val => this.handleOnChangeText(val)}
               value={inputText}
               onSubmitEditing={event => this.handleOnSubmit(event)}
             />
           ) : (
-            <Text style={styles.header} onPress={this.toggleInput}>
-              {headerText}
-            </Text>
+            <TouchableOpacity onPress={this.toggleInput}>
+              <Text style={styles.header}>{headerText}</Text>
+            </TouchableOpacity>
           )}
         </KeyboardAvoidingView>
       </View>
@@ -128,26 +146,29 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF'
+    backgroundColor: "#F5FCFF"
   },
-  contentContainer: {
-    justifyContent: 'center',
-    alignItems: 'center'
+  center: {
+    justifyContent: "center",
+    alignItems: "center"
   },
   header: {
+    fontSize: 50,
+    textAlign: "center"
+  },
+  text: {
     fontSize: 20,
-    textAlign: 'center',
-    margin: 10
+    marginVertical: 10,
+    flexWrap: "wrap"
   },
   textInput: {
     width: WIDTH * 0.75,
     borderWidth: 0.5,
-    marginTop: 20
+    marginTop: 15,
+    alignSelf: "center"
   },
   image: {
-    width: WIDTH * 0.5,
-    height: WIDTH * 0.5
+    width: WIDTH * 0.65,
+    height: WIDTH * 0.65
   }
 });
