@@ -21,25 +21,29 @@ describe("App", () => {
     const wrapper = shallow(<App />);
     const instance = wrapper.instance();
 
-    wrapper.setState({ text: "abc", latitude: "100.000", longitude: "-50.000" });
+    wrapper.setState({
+      text: "abc",
+      latitude: "100.000",
+      longitude: "-50.000"
+    });
     instance.toggleInput();
 
     expect(wrapper).toMatchSnapshot();
   });
 
   describe("TextInput's onChangeText prop", () => {
-    it('sets inputText state to inputted value', () => {
+    it("sets inputText state to inputted value", () => {
       const wrapper = shallow(<App />);
 
       wrapper.setState({ showInput: true });
       wrapper.find("TextInput").prop("onChangeText")("abc");
 
       expect(wrapper.state("inputText")).toEqual("abc");
-    })
-  })
+    });
+  });
 
   describe("TextInput's onSubmitEditing prop", () => {
-    it('sets text state and resets inputText state to an empty string', () => {
+    it("sets text state and resets inputText state to an empty string", () => {
       const wrapper = shallow(<App />);
 
       wrapper.setState({ showInput: true });
@@ -49,6 +53,6 @@ describe("App", () => {
 
       expect(wrapper.state("text")).toEqual("abc");
       expect(wrapper.state("inputText")).toEqual("");
-    })
+    });
   });
 });

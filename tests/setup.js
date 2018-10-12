@@ -4,17 +4,17 @@ import Adapter from "enzyme-adapter-react-16";
 global.navigator = {
   geolocation: {
     clearWatch: jest.fn(),
-    getCurrentPosition: jest.fn((success, failure, options) => {
+    getCurrentPosition: jest.fn(success => {
       success({
         coords: {
           longitude: 60,
-          latitude: 60,
-        },
+          latitude: 60
+        }
       });
     }),
     stopObserving: jest.fn(),
-    watchPosition: jest.fn(),
-  },
+    watchPosition: jest.fn()
+  }
 };
 
 Enzyme.configure({ adapter: new Adapter() });

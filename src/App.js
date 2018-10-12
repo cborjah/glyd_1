@@ -41,10 +41,10 @@ export default class App extends Component {
     // navigator.geolocation is global, no import required
     navigator.geolocation.getCurrentPosition(
       ({ coords: { latitude, longitude } }) => {
-        // console.log(
-        //   "Successfully retrieved coordinates:",
-        //   `latitude: ${latitude}, longitude: ${longitude}`
-        // );
+        console.log(
+          "Successfully retrieved coordinates:",
+          `latitude: ${latitude}, longitude: ${longitude}`
+        );
         this.setState({
           latitude: latitude.toFixed(3),
           longitude: longitude.toFixed(3)
@@ -88,13 +88,11 @@ export default class App extends Component {
     Share.share(content, options);
   };
 
-  renderImage = () => {
-    return (
-      <TouchableOpacity onPress={this.handleShare}>
-        <Image source={{ uri: imageURI }} style={styles.image} />
-      </TouchableOpacity>
-    );
-  };
+  renderImage = () => (
+    <TouchableOpacity onPress={this.handleShare}>
+      <Image source={{ uri: imageURI }} style={styles.image} />
+    </TouchableOpacity>
+  );
 
   renderCoordinates = () => {
     const { latitude, longitude, text } = this.state;
