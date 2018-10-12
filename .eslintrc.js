@@ -12,6 +12,7 @@ module.exports = {
       "no-use-before-define": 0,
       "consistent-return": 0,
       "arrow-body-style": 0,
-      "no-console": 0
+      "no-console": 0,
+      "no-undef": 0
     }
 };

@@ -39,13 +39,12 @@ export default class App extends Component {
     };
 
     // navigator.geolocation is global, no import required
-    // eslint-disable-next-line no-undef
     navigator.geolocation.getCurrentPosition(
       ({ coords: { latitude, longitude } }) => {
-        console.log(
-          "Successfully retrieved coordinates:",
-          `latitude: ${latitude}, longitude: ${longitude}`
-        );
+        // console.log(
+        //   "Successfully retrieved coordinates:",
+        //   `latitude: ${latitude}, longitude: ${longitude}`
+        // );
         this.setState({
           latitude: latitude.toFixed(3),
           longitude: longitude.toFixed(3)
